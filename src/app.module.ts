@@ -5,14 +5,10 @@ import { UserModule } from '@modules/user/user.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { DomainTrackModule } from '@modules/domainTrack/domainTrack.module';
 import { ConfigModule } from '@nestjs/config';
-import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    HttpModule.registerAsync({
-      global: true,
-    }),
     UserModule,
     AuthModule,
     DomainTrackModule,

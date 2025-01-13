@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiResponseT } from '@utils/types';
 import { ApiUtilsService } from '@utils/utils.service';
 import JwtAuthGuard from '@modules/auth/guards/jwt-auth.guard';
-import { GetUser } from '@modules/auth/decorators/user.decorator';
+import { GetUser } from '@common/decorators/user.decorator';
 import { JwtDto } from 'src/common/dto/jwt.dto';
 import { DomainTrackService } from '../services/domainTrack.service';
 import { AddDomainDto } from '../dto/addDomain.dto';
