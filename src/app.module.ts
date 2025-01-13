@@ -7,11 +7,18 @@ import { DomainTrackModule } from '@modules/domainTrack/domainTrack.module';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisOptions } from '@utils/functions';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     CacheModule.registerAsync(RedisOptions),
+    BullModule.forRoot({
+      redis: {
+        host: 'seo-tracker-redis',
+        port: 6379,
+      },
+    }),
     UserModule,
     AuthModule,
     DomainTrackModule,

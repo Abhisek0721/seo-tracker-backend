@@ -14,6 +14,8 @@ import { envConstant } from '@constants/index';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class DomainTrackService {
@@ -21,6 +23,7 @@ export class DomainTrackService {
     private readonly prisma: PrismaService,
     private httpService: HttpService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    @InjectQueue('domain-track') private readonly domainTrackQueue: Queue,
   ) {}
 
   async addDomain(dto: AddDomainDto, user: JwtDto) {
@@ -64,6 +67,8 @@ export class DomainTrackService {
           },
         },
       });
+
+      await this.domainTrackQueue.add('process-domain', { domainTrackId: domainTrack.id, userId: user.userId });
 
       return domainTrack;
     } catch (error) {
@@ -126,7 +131,7 @@ export class DomainTrackService {
     }
   }
 
-  private async updateDomainMetrices(
+  async updateDomainMetrices(
     dataforseo_taskId: string,
     domainTrackId: string,
   ) {
