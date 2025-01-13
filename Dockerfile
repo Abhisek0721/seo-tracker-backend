@@ -10,9 +10,6 @@ COPY package*.json ./
 # Step 4: Install dependencies
 RUN npm install --production
 
-# Install dependencies
-RUN npm install
-
 # Optionally install NestJS CLI globally
 RUN npm install -g @nestjs/cli
 
@@ -22,11 +19,14 @@ COPY . .
 # Step 6: Generate the Prisma client
 RUN npx prisma generate
 
-# Step 7: Build the application (if applicable)
+# Step 7: Apply database migrations
+RUN npx prisma migrate deploy  # This ensures that migrations are applied to the database
+
+# Step 8: Build the application (if applicable)
 RUN npm run build
 
-# Step 8: Expose the application port
+# Step 9: Expose the application port
 EXPOSE ${PORT}
 
-# Step 9: Define the command to run your application
+# Step 10: Define the command to run your application
 CMD ["npm", "run", "start:prod"]
