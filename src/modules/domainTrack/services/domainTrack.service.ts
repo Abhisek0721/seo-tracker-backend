@@ -30,7 +30,7 @@ export class DomainTrackService {
           domainName: dto.domainName,
         },
       });
-      if (!checkDomain) {
+      if (checkDomain) {
         throw new BadRequestException(`${dto.domainName} is already added`);
       }
       const apiUrl = `${envConstant.DATAFORSEO_BASE_URL}/on_page/task_post`;
