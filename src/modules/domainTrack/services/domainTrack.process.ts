@@ -19,7 +19,7 @@ export class DomainTrackConsumer {
   async handleDomainTrack(job: Job<{ domainTrackId: string; userId: string }>) {
     const { domainTrackId, userId } = job.data;
     try {
-      Logger.log(`Processing domainTrackId: ${domainTrackId}`);
+      Logger.log(`Processing domainTrackId: ${domainTrackId}:${userId}`);
 
       const domainTrack = await this.prisma.domainTrack.findUnique({
         where: { id: domainTrackId },
