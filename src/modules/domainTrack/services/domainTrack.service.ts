@@ -68,7 +68,11 @@ export class DomainTrackService {
         },
       });
 
-      await this.domainTrackQueue.add('process-domain', { domainTrackId: domainTrack.id, userId: user.userId });
+      await this.domainTrackQueue.add(
+        'process-domain',
+        { domainTrackId: domainTrack.id, userId: user.userId },
+        { delay: 20000 }, // consume after 20sec delay
+      );
 
       return domainTrack;
     } catch (error) {
@@ -103,8 +107,8 @@ export class DomainTrackService {
               crawl_progress: true,
               ip: true,
               server: true,
-            }
-          }
+            },
+          },
         },
         orderBy: {
           createdAt: 'desc',
@@ -131,10 +135,7 @@ export class DomainTrackService {
     }
   }
 
-  async updateDomainMetrices(
-    dataforseo_taskId: string,
-    domainTrackId: string,
-  ) {
+  async updateDomainMetrices(dataforseo_taskId: string, domainTrackId: string) {
     try {
       const apiUrl = `${envConstant.DATAFORSEO_BASE_URL}/on_page/summary/${dataforseo_taskId}`;
 
