@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  fullName  String
+  email     String   @unique
+  password  String?
+  verified  Boolean? @default(false)
+
+  domainTrack DomainTrack[]
+}
+
+model DomainTrack {
+  id                String   @id @default(uuid())
+  userId            String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  domainName        String
+  dataforseo_taskId String?
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  DomainInfo DomainInfo?
+}
+
+model DomainInfo {
+  id                                     String    @id @default(uuid())
+  createdAt                              DateTime  @default(now())
+  updatedAt                              DateTime  @updatedAt
+  domainTrackId                          String    @unique
+  crawl_progress                         String?
+  total_pages                            Int?
+  ip                                     String?
+  server                                 String?
+  ssl                                    Boolean?
+  ssl_certificate_expiration_date        DateTime?
+  links_external                         Int?
+  links_internal                         Int?
+  duplicate_title                        Int?
+  duplicate_description                  Int?
+  duplicate_content                      Int?
+  broken_links                           Int?
+  duplicate_meta_tags                    Int?
+  no_description                         Int?
+  seo_friendly_url                       Int?
+  seo_friendly_url_characters_check      Int?
+  seo_friendly_url_dynamic_check         Int?
+  seo_friendly_url_keywords_check        Int?
+  seo_friendly_url_relative_length_check Int?
+
+  domainTrack DomainTrack @relation(fields: [domainTrackId], references: [id], onDelete: Cascade)
+}
