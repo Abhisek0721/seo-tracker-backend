@@ -7,5 +7,5 @@ export class AddDomainDto {
 
   @IsNotEmpty()
   @IsInt()
-  max_crawl_pages: number;
+  maxCrawlPages: number;
 }

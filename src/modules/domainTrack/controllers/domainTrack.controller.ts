@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiResponseT } from '@utils/types';
 import { ApiUtilsService } from '@utils/utils.service';
 import JwtAuthGuard from '@modules/auth/guards/jwt-auth.guard';
@@ -31,9 +39,18 @@ export class DomainTrackController {
   @Get('domain-list')
   async getDomainsList(
     @Query() paginationDto: PaginationDto,
-    @GetUser() user: JwtDto
+    @GetUser() user: JwtDto,
   ): Promise<ApiResponseT> {
     const data = await this.domainTrackService.domainList(paginationDto, user);
+    return this.apiUtilsSevice.make_response(data);
+  }
+
+  @Get('domain-metrices/:domainTrackId')
+  async getDomainMetrices(
+    @Param('domainTrackId') domainTrackId: string,
+    @GetUser() user: JwtDto,
+  ): Promise<ApiResponseT> {
+    const data = await this.domainTrackService.getDomainMetrices(domainTrackId, user);
     return this.apiUtilsSevice.make_response(data);
   }
 }

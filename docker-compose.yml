@@ -1,0 +1,64 @@
+version: '3.9'
+
+services:
+  seo-tracker:
+    container_name: seo-tracker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - seo-tracker-postgres
+      - seo-tracker-redis
+    ports:
+      - ${PORT}:${PORT}
+    restart: always
+    environment:
+      - PORT=${PORT}
+      - BASE_URL=${BASE_URL}
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - FACEBOOK_APP_SECRET=${FACEBOOK_APP_SECRET}
+      - GOOGLE_LOGIN_REDIRECT_ENDPOINT=${GOOGLE_LOGIN_REDIRECT_ENDPOINT}
+      - DATAFORSEO_BASE_URL=${DATAFORSEO_BASE_URL}
+      - DATAFORSEO_AUTH_KEY=${DATAFORSEO_AUTH_KEY}
+    networks:
+      - broker_network
+
+  seo-tracker-postgres:
+    image: postgres:14.1-alpine
+    container_name: seo-tracker-postgres
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - broker_network
+
+  seo-tracker-redis:
+    container_name: seo-tracker-redis
+    image: redis:6.2.6-alpine
+    restart: always
+    volumes:
+      - redis_data:/data # <-- Add this to persist Redis data
+    networks:
+      - broker_network
+
+volumes:
+  redis_data:
+  postgres_data:
+
+
+networks:
+  broker_network:
+    name: message_broker_network
+    external: true
+
+  
