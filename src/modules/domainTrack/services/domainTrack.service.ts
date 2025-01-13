@@ -93,6 +93,13 @@ export class DomainTrackService {
           dataforseo_taskId: true,
           domainName: true,
           createdAt: true,
+          DomainInfo: {
+            select: {
+              crawl_progress: true,
+              ip: true,
+              server: true,
+            }
+          }
         },
         orderBy: {
           createdAt: 'desc',
