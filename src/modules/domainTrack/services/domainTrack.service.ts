@@ -1,5 +1,11 @@
 import { JwtDto } from 'src/common/dto/jwt.dto';
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddDomainDto } from '../dto/addDomain.dto';
 import { HttpService } from '@nestjs/axios';
@@ -19,6 +25,14 @@ export class DomainTrackService {
 
   async addDomain(dto: AddDomainDto, user: JwtDto) {
     try {
+      const checkDomain = await this.prisma.domainTrack.count({
+        where: {
+          domainName: dto.domainName,
+        },
+      });
+      if (!checkDomain) {
+        throw new BadRequestException(`${dto.domainName} is already added`);
+      }
       const apiUrl = `${envConstant.DATAFORSEO_BASE_URL}/on_page/task_post`;
       const payload = [
         {
@@ -173,7 +187,7 @@ export class DomainTrackService {
   async getDomainMetrices(domainTrackId: string, user: JwtDto) {
     try {
       const cacheKey = `domain-metrics:${domainTrackId}:${user.userId}`;
-      let domainMatrices:any = await this.cacheManager.get(cacheKey);
+      let domainMatrices: any = await this.cacheManager.get(cacheKey);
       if (!domainMatrices) {
         // Fetch domainTrack data from the database
         const domainCheck = await this.prisma.domainTrack.findUnique({
@@ -191,7 +205,10 @@ export class DomainTrackService {
         }
 
         // Update domain metrics
-        await this.updateDomainMetrices(domainCheck.dataforseo_taskId, domainTrackId);
+        await this.updateDomainMetrices(
+          domainCheck.dataforseo_taskId,
+          domainTrackId,
+        );
 
         // Fetch updated domain metrics from the database
         domainMatrices = await this.prisma.domainTrack.findUnique({
@@ -208,7 +225,7 @@ export class DomainTrackService {
           throw new NotFoundException('Domain metrics not found after update.');
         }
 
-        await this.cacheManager.set(cacheKey, domainMatrices, (10*60*1000) );
+        await this.cacheManager.set(cacheKey, domainMatrices, 10 * 60 * 1000);
       }
 
       return domainMatrices;
