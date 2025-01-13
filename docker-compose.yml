@@ -41,6 +41,12 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     networks:
       - broker_network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
 
   seo-tracker-redis:
     container_name: seo-tracker-redis
