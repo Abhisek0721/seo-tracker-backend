@@ -31,6 +31,7 @@ export class DomainTrackService {
       const checkDomain = await this.prisma.domainTrack.count({
         where: {
           domainName: dto.domainName,
+          userId: user.userId
         },
       });
       if (checkDomain) {
